@@ -58,10 +58,8 @@ function addError(text) {
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
-  // test for relevant API-s
-  // for (let api of ['speechSynthesis', 'webkitSpeechSynthesis', 'speechRecognition', 'webkitSpeechRecognition']) {
-  //   console.log('api ' + api + " and if browser has it: " + (api in window));
-  // }
+//Added claim object
+	var claim = new Object();
 
   displayCurrentTime();
 
@@ -84,10 +82,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
   // Now we’ve established that the browser is Chrome with proper speech API-s.
 
   // api.ai client
-  const apiClient = new ApiAi.ApiAiClient({accessToken: '329dcb8e2a8f4876acbf7fb616978686'});
+  //https://bot.dialogflow.com/9901bf0b-ece5-450a-8050-5bdd467d32d8
+  const apiClient = new ApiAi.ApiAiClient({accessToken: 'b259b98221674057926adda7f30a9cce'});
 
   // Initial feedback message.
-  addBotItem("Hi! I’m voicebot. Tap the microphone and start talking to me.");
+  addBotItem("Hi! I’m voicebot. What is your name?");
+  
+  //Initial Feeback voice
+  var msg = new SpeechSynthesisUtterance("Hi! I’m voicebot. What is your name?");
+  msg.addEventListener("end", function(ev) {
+      window.clearTimeout(timer);
+      startListening();
+    });
+    msg.addEventListener("error", function(ev) {
+      window.clearTimeout(timer);
+      startListening();
+    });
+  window.speechSynthesis.speak(msg);
 
   var recognition = new webkitSpeechRecognition();
   var recognizedText = null;
@@ -97,7 +108,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
   };
   recognition.onresult = function(ev) {
     recognizedText = ev["results"][0][0]["transcript"];
-
+    
+    console.log("onresult | recognizedText: ", recognizedText);
+    
+    claim.clientName = recognizedText;
+    
+    console.log("onresult | claim Object: ", claim);
     addUserItem(recognizedText);
     ga('send', 'event', 'Message', 'add', 'user');
 
@@ -109,11 +125,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     function handleResponse(serverResponse) {
 
+    	 
       // Set a timer just in case. so if there was an error speaking or whatever, there will at least be a prompt to continue
       var timer = window.setTimeout(function() { startListening(); }, 5000);
 
       const speech = serverResponse["result"]["fulfillment"]["speech"];
       var msg = new SpeechSynthesisUtterance(speech);
+      
+      console.log("handleResponse | serverResponse: ", speech);
       addBotItem(speech);
       ga('send', 'event', 'Message', 'add', 'bot');
       msg.addEventListener("end", function(ev) {
