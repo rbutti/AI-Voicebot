@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   // api.ai client
   //https://bot.dialogflow.com/9901bf0b-ece5-450a-8050-5bdd467d32d8
-  const apiClient = new ApiAi.ApiAiClient({accessToken: 'b259b98221674057926adda7f30a9cce'});
+  const apiClient = new ApiAi.ApiAiClient({accessToken: '8c9f233b83124fbd9ff4a4de3b720c30'});
 
   // Initial feedback message.
   addBotItem("Hi! I’m voicebot. What is your name?");
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       window.clearTimeout(timer);
       startListening();
     });
-  window.speechSynthesis.speak(msg);
+ // window.speechSynthesis.speak(msg);
 
   var recognition = new webkitSpeechRecognition();
   var recognizedText = null;
